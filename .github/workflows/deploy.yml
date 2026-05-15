@@ -1,0 +1,48 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v0.1.9
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+            PROJECT_DIR="$HOME/test-sikili"
+            if [ -d "$PROJECT_DIR/.git" ]; then
+              cd "$PROJECT_DIR"
+              git fetch --all
+              git reset --hard origin/main
+            else
+              git clone https://github.com/<OWNER>/<REPO>.git "$PROJECT_DIR"
+              cd "$PROJECT_DIR"
+            fi
+
+            # Optional: write .env from secret DOT_ENV (if provided)
+            if [ -n "${{ secrets.DOT_ENV }}" ]; then
+              cat > "$PROJECT_DIR/.env" <<'EOF'
+${{ secrets.DOT_ENV }}
+EOF
+            fi
+
+            # Build & start
+            docker compose pull || true
+            docker compose up -d --build
+
+            # Apply DB migrations
+            docker compose exec -T app pnpm prisma migrate deploy || true
+
+            # (Optional) Run Odoo test script to validate integration
+            docker compose exec -T app pnpm odoo:test || true
