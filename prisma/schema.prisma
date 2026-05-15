@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SyncStatus {
+  PENDING
+  SYNCED
+  FAILED
+}
+
+model Client {
+  id            Int        @id @default(autoincrement())
+  name          String
+  email         String     @unique
+  phone         String
+  odooPartnerId Int?       @map("odoo_partner_id")
+  syncStatus    SyncStatus @default(PENDING) @map("sync_status")
+  syncError     String?    @map("sync_error")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  orders        Order[]
+
+  @@map("clients")
+}
+
+model Order {
+  id           Int        @id @default(autoincrement())
+  clientId     Int        @map("client_id")
+  client       Client     @relation(fields: [clientId], references: [id])
+  productName  String     @map("product_name")
+  amount       Decimal    @db.Decimal(12, 2)
+  odooOrderId  Int?       @map("odoo_order_id")
+  syncStatus   SyncStatus @default(PENDING) @map("sync_status")
+  syncError    String?    @map("sync_error")
+  createdAt    DateTime   @default(now()) @map("created_at")
+
+  @@map("orders")
+}
