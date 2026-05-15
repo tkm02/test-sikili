@@ -106,7 +106,7 @@ pnpm dev
 
 ### `res.partner` → Clients
 
-Le modèle natif d'Odoo pour les contacts et clients. On crée un partenaire avec `customer_rank: 1`, ce qui est obligatoire pour qu'il apparaisse dans la vue "Clients" du module Sales (sans ce flag, il n'est visible que dans Contacts).
+Le modèle natif d'Odoo pour les contacts et clients. On crée un partenaire avec les champs de base pour rester compatible avec la version d'Odoo déployée.
 
 Champs mappés :
 
@@ -115,7 +115,7 @@ Champs mappés :
 | `name` | `name` |
 | `email` | `email` |
 | `phone` | `phone` |
-| *(fixe)* | `customer_rank: 1` |
+| *(fixe)* | champs de base uniquement |
 
 ### `sale.order` + `sale.order.line` → Commandes
 

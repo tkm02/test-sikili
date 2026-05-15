@@ -7,9 +7,8 @@ export interface OdooPartnerData {
 }
 
 /**
- * Crée un res.partner dans Odoo avec customer_rank=1.
- * customer_rank=1 est obligatoire pour que le contact apparaisse
- * dans la vue "Clients" du module Sales (pas seulement dans Contacts).
+ * Crée un res.partner dans Odoo avec les champs compatibles les plus basiques.
+ * On évite d'envoyer des champs dépendants d'une version/module précis.
  */
 export async function createOdooPartner(data: OdooPartnerData): Promise<number> {
   const partnerId = await odooExecute<number>('res.partner', 'create', [
@@ -17,7 +16,6 @@ export async function createOdooPartner(data: OdooPartnerData): Promise<number> 
       name: data.name,
       email: data.email,
       phone: data.phone,
-      customer_rank: 1,
     },
   ])
 
