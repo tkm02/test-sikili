@@ -26,7 +26,13 @@ function callXmlRpc(
     const client = createClient({ host, port, path })
 
     client.methodCall(method, params, (err: any, value: unknown) => {
-      if (err) return reject(new OdooRpcError(err.message))
+      if (err) {
+        const msg: string = err.message ?? ''
+        if (msg.includes('TITLE') || msg.includes('Unknown XML-RPC tag')) {
+          return reject(new OdooRpcError('Odoo non initialisé — base de données non prête pour XML-RPC'))
+        }
+        return reject(new OdooRpcError(msg))
+      }
       resolve(value)
     })
   })
@@ -37,12 +43,18 @@ let cachedUid: number | null = null
 async function authenticate(): Promise<number> {
   if (cachedUid !== null) return cachedUid
 
-  const uid = await callXmlRpc('/xmlrpc/2/common', 'authenticate', [
-    ODOO_DB,
-    ODOO_USER,
-    ODOO_PASSWORD,
-    {},
-  ])
+  let uid: unknown
+  try {
+    uid = await callXmlRpc('/xmlrpc/2/common', 'authenticate', [
+      ODOO_DB,
+      ODOO_USER,
+      ODOO_PASSWORD,
+      {},
+    ])
+  } catch (err) {
+    cachedUid = null
+    throw err
+  }
 
   if (!uid || typeof uid !== 'number') {
     throw new OdooAuthError(

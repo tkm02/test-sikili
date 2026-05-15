@@ -102,6 +102,35 @@ pnpm dev
 | Utilisateur | admin@example.com |
 | Mot de passe | *(défini lors de l'init de la DB Odoo)* |
 
+## Déploiement
+
+Le repository contient un workflow GitHub Actions pour déployer sur un VPS via SSH : `.github/workflows/deploy.yml`. Le workflow se déclenche sur `push` vers la branche `main`.
+
+Secrets GitHub requis (Settings → Secrets & variables → Actions):
+- `SSH_HOST` — adresse IP ou host du VPS
+- `SSH_USER` — utilisateur SSH (ex: `root` ou `ubuntu`)
+- `SSH_PORT` — (optionnel) port SSH (défaut `22`)
+- `SSH_PRIVATE_KEY` — clé privée de déploiement (PEM/OPENSSH)
+- `REPO_PAT` — Personal Access Token pour cloner le repo depuis le VPS (si nécessaire)
+- `DOT_ENV` — (optionnel) contenu du `.env` à écrire sur le VPS (préférer création manuelle)
+
+Important : si tu as déjà exposé une clé privée (par ex. collée dans une discussion), considère-la compromise et régénère une nouvelle paire SSH. Ne place jamais une clé compromise dans les secrets.
+
+Déploiement manuel / vérification sur le VPS (après configuration des secrets):
+
+```bash
+# dans le VPS
+cd ~/test-sikili
+git fetch --all
+git reset --hard origin/main
+docker compose up -d --build
+docker compose exec -T app pnpm prisma migrate deploy || true
+docker compose exec -T app pnpm odoo:test || true
+```
+
+Alternativement, le workflow GitHub effectue une connexion SSH et exécute des commandes similaires sur le VPS. Vérifie les logs de l'Action pour diagnostiquer les erreurs.
+
+
 ## Objets Odoo utilisés
 
 ### `res.partner` → Clients
