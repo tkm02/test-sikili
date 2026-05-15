@@ -33,9 +33,10 @@ jobs:
               cd "$PROJECT_DIR"
             fi
 
-            # Optional: write .env from secret DOT_ENV (if provided)
-            # Optional: create .env on the VPS manually or via a secret
-            # (avoid embedding multiline secrets in the workflow to prevent YAML parsing issues)
+            # Write .env from GitHub Secret (set DOT_ENV in repo Settings → Secrets)
+            if [ -n "${{ secrets.DOT_ENV }}" ]; then
+              printf '%s' '${{ secrets.DOT_ENV }}' > .env
+            fi
 
             # Build & start
             docker compose pull || true
