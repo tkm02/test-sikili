@@ -18,7 +18,9 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
+          command_timeout: 30m
           script: |
+            export NEXT_TELEMETRY_DISABLED=1
             set -e
             PROJECT_DIR="$HOME/test-sikili"
             if [ -d "$PROJECT_DIR/.git" ]; then
