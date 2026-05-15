@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { db } from '@/lib/db'
 import { createOdooPartner } from '@/lib/odoo/partners'
 import { extractOdooErrorMessage } from '@/lib/odoo/errors'
@@ -33,9 +34,20 @@ export async function POST(req: NextRequest) {
   const { name, email, phone } = parsed.data
 
   // 1. Persister localement d'abord (principe offline-first / fiabilité)
-  const client = await db.client.create({
-    data: { name, email, phone, syncStatus: 'PENDING' },
-  })
+  let client
+  try {
+    client = await db.client.create({
+      data: { name, email, phone, syncStatus: 'PENDING' },
+    })
+  } catch (err) {
+    if (err instanceof PrismaClientKnownRequestError && err.code === 'P2002') {
+      return NextResponse.json(
+        { error: 'Un client avec cet email existe déjà' },
+        { status: 409 },
+      )
+    }
+    throw err
+  }
 
   // 2. Synchroniser avec Odoo de façon asynchrone mais dans la même requête
   try {

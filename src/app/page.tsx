@@ -1,4 +1,5 @@
 import { db } from '@/lib/db'
+import { DeleteClientButton } from '@/components/DeleteClientButton'
 
 const STATUS_LABEL: Record<string, string> = {
   PENDING: 'En attente',
@@ -53,10 +54,11 @@ export default async function HomePage() {
               <th style={{ textAlign: 'left', padding: '8px 12px' }}>Odoo ID</th>
               <th style={{ textAlign: 'left', padding: '8px 12px' }}>Statut sync</th>
               <th style={{ textAlign: 'left', padding: '8px 12px' }}>Commandes</th>
+              <th style={{ textAlign: 'left', padding: '8px 12px' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {clients.map((client) => (
+            {clients.map((client: typeof clients[number]) => (
               <tr key={client.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                 <td style={{ padding: '10px 12px', fontWeight: '500' }}>{client.name}</td>
                 <td style={{ padding: '10px 12px', color: '#6b7280' }}>{client.email}</td>
@@ -89,6 +91,9 @@ export default async function HomePage() {
                       + Commande
                     </a>
                   )}
+                </td>
+                <td style={{ padding: '10px 12px' }}>
+                  <DeleteClientButton id={client.id} />
                 </td>
               </tr>
             ))}
