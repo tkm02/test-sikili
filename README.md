@@ -80,7 +80,7 @@ cp .env.example .env
 # → DATABASE_URL=postgresql://app:app@localhost:5432/app
 # → ODOO_URL=http://localhost:8069
 # → ODOO_DB=sikili
-# → ODOO_USER=admin
+# → ODOO_USER=admin@example.com
 # → ODOO_PASSWORD=<mot de passe admin>
 
 # Lancer les migrations et générer le client Prisma
@@ -99,7 +99,7 @@ pnpm dev
 |---|---|
 | URL | http://localhost:8069 |
 | Base de données | sikili |
-| Utilisateur | admin |
+| Utilisateur | admin@example.com |
 | Mot de passe | *(défini lors de l'init de la DB Odoo)* |
 
 ## Objets Odoo utilisés

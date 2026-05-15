@@ -25,7 +25,7 @@ function callXmlRpc(
     const createClient = secure ? xmlrpc.createSecureClient : xmlrpc.createClient
     const client = createClient({ host, port, path })
 
-    client.methodCall(method, params, (err: Error | null, value: unknown) => {
+    client.methodCall(method, params, (err: any, value: unknown) => {
       if (err) return reject(new OdooRpcError(err.message))
       resolve(value)
     })
