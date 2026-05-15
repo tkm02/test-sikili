@@ -31,11 +31,8 @@ jobs:
             fi
 
             # Optional: write .env from secret DOT_ENV (if provided)
-            if [ -n "${{ secrets.DOT_ENV }}" ]; then
-              cat > "$PROJECT_DIR/.env" <<'EOF'
-${{ secrets.DOT_ENV }}
-EOF
-            fi
+            # Optional: create .env on the VPS manually or via a secret
+            # (avoid embedding multiline secrets in the workflow to prevent YAML parsing issues)
 
             # Build & start
             docker compose pull || true
