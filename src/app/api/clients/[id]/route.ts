@@ -7,9 +7,14 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params
+  const clientId = parseInt(id, 10)
+
+  if (isNaN(clientId)) {
+    return NextResponse.json({ error: 'ID invalide' }, { status: 400 })
+  }
 
   try {
-    await db.client.delete({ where: { id } })
+    await db.client.delete({ where: { id: clientId } })
     return new NextResponse(null, { status: 204 })
   } catch (err) {
     if (err instanceof PrismaClientKnownRequestError && err.code === 'P2025') {
