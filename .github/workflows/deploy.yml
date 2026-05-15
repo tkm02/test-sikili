@@ -26,7 +26,8 @@ jobs:
               git fetch --all
               git reset --hard origin/main
             else
-              git clone https://tkm02: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@github.com/tkm02/test-sikili.git "$PROJECT_DIR"
+              # Clone using a repository token stored in GitHub Secrets. Add `REPO_PAT` in Settings → Secrets.
+              git clone https://x-access-token:${{ secrets.REPO_PAT }}@github.com/tkm02/test-sikili.git "$PROJECT_DIR"
               cd "$PROJECT_DIR"
             fi
 
