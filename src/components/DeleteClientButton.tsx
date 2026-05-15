@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-export function DeleteClientButton({ id }: { id: string }) {
+export function DeleteClientButton({ id }: { id: number | string }) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
 
