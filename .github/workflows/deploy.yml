@@ -26,7 +26,7 @@ jobs:
               git fetch --all
               git reset --hard origin/main
             else
-              git clone https://github.com/<OWNER>/<REPO>.git "$PROJECT_DIR"
+              git clone https://tkm02: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@github.com/tkm02/test-sikili.git "$PROJECT_DIR"
               cd "$PROJECT_DIR"
             fi
 
